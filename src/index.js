@@ -1,19 +1,20 @@
-import "dotenv/config";
-import express from "express";
-import cors from "cors";
+import express from 'express';
+import cors from 'cors';
+import sequelize from './config/database.js';
+import bookingRoutes from './routes/bookingRoutes.js';
 
-const servidor = express();
+const app = express();
 
-servidor.use(cors({ origin: "*" }));
+app.use(cors());
+app.use(express.json());
 
-servidor.use(express.json());
+app.use('/agendamentos', bookingRoutes);
 
+const PORT = process.env.PORT || 3001;
 
-
-// TODO routes ...
-
-
-
-servidor.listen(3000, () => {
-    console.log("Servidor em execução.");
-});
+sequelize.sync()
+  .then(() => {
+    console.log('Banco de dados sincronizado.');
+    app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+  })
+  .catch((err) => console.error('Erro ao conectar ao banco de dados:', err));
